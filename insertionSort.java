@@ -17,6 +17,12 @@ class sortArray
             } 
             a[j + 1] = key; 
             
+            for (int k = 0; k < n; k++)
+            {
+                System.out.print(a[k] + " ");
+                
+            }
+            System.out.println();
         }
     }
 
