@@ -1,10 +1,16 @@
 import java.util.Random;
 
+
+//Divide and conquer function
 class functionSearch
 {
     public static void main (String[] args)
     {
+        int a[] = {21, 4, 5, 2, 6, 10, 16};
+        int target = 6;
+        searchArray obj = new searchArray();
 
+        System.out.println(obj.search(a, target));
     }
 }
 
@@ -40,6 +46,8 @@ class searchArray
                     hi = guess - 1;
                 }
             }
+
+            System.out.println(guess);
         }
 
         return place;
@@ -50,6 +58,7 @@ class searchArray
     {
         Random random = new Random();
 
-        int place = random
+        int place = random.nextInt((hi - lo) + 1) + lo;
+        return place;
     }
 }
