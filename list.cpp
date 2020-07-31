@@ -14,6 +14,7 @@ class List
         ListNode<BaseData> *head;
         ListNode<BaseData> *currentNode;
         ListNode<BaseData> *previous;
+        ListNode<BaseData> *afterNode;
 
         int numNodes;
         int currentPos;
@@ -95,5 +96,78 @@ void List<BaseData>::insertBefore(const BaseData &item)
     //increase numNodes by one
     ++numNodes;
     currentNode = p;
+    
+}
+
+template <class BaseData>
+void List<BaseData>::insertAfter(const BaseData &item)
+{
+    //create new pointer
+    ListNode<BaseData> *p;
+    p = new ListNode<BaseData>;
+
+    //assign contents of item to the node referenced by p
+    p->listData = item;
+
+    //if the current position is at the end of the list
+    if (currentPos == numNodes)
+    {
+        if (numNodes == 0)
+        {
+            p->link = null;
+        }
+        else
+        {
+            currentNode->link = p;
+            p->link = null;
+        }
+    }
+    else
+    {
+        currentNode->link = p;
+        p->link = afterNode;
+    }
+
+    ++numNodes;
+    currentNode = p;
+    
+}
+
+template <class BaseData>
+void List<BaseData>::remove()
+{
+    ListNode<BaseData>*p, *temp;
+
+    p = currentNode;
+    if (currentPos == 1)
+    {
+        head = currentNode -> link;
+        currentNode = head;
+    }
+    else
+    {
+        previous->link = currentNode->link;
+        if (currentNode->link != null)
+        {
+            currentNode = currentNode->link
+        }
+        else
+        {
+            currentNode = previous;
+            temp = head;
+            
+            while (temp->link != currentNode)
+            {
+                temp = temp->link;
+            }
+            previous = temp;
+            --currentPos
+            
+        }
+        
+        
+    }
+    delete p;
+    --numNodes
     
 }
