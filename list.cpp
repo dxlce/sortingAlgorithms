@@ -135,39 +135,67 @@ void List<BaseData>::insertAfter(const BaseData &item)
 
 template <class BaseData>
 void List<BaseData>::remove()
+
 {
     ListNode<BaseData>*p, *temp;
 
     p = currentNode;
+
+    //if current position of current node is 1
     if (currentPos == 1)
     {
+        //assign head to the next node
         head = currentNode -> link;
+
+        //set currentNode to head
         currentNode = head;
     }
+
+    //if position of node is anywhere else
     else
     {
+
+        //connect previous node to the node after currentNode
         previous->link = currentNode->link;
+        
+        //if there is a node following currentNode
         if (currentNode->link != null)
         {
+            //set currentNode to the following node
             currentNode = currentNode->link
         }
         else
         {
+            //set currentNode to previous
             currentNode = previous;
+
+            //set temp to head
             temp = head;
             
+            //while head is not equivalent to currentNode (ie. start from the start and go to there)
             while (temp->link != currentNode)
             {
+                //link everything
                 temp = temp->link;
             }
+
+            //set previous to temp
             previous = temp;
+            //fix current postiion 
             --currentPos
             
         }
         
         
     }
+
+    //delete node
     delete p;
-    --numNodes
+    --numNodes  
+}
+
+template <class BaseData>
+void List<BaseData>::replace(const BaseData &item)
+{
     
 }
