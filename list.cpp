@@ -51,6 +51,33 @@ List<BaseData>::List()
     currentNode = 0;
 }
 
+//not sure if this works
+template <class BaseData>
+void List<BaseData>::first()
+{
+    currentNode = head;
+    currentPost = 1;
+}
+
+template <class BaseData>
+void List<BaseData>::last()
+{
+    ListNode<BaseData> *p;
+
+    p = currentNode;
+
+    while (currentNode->link != null)
+    {
+        currentNode = currentNode -> link;
+    }
+}
+
+template <class BaseData>
+void List<BaseData>::next()
+{
+    currentNode = currentNode->link;
+}
+
 template <class BaseData>
 void List<BaseData>::insertBefore(const BaseData &item)
 {
@@ -194,8 +221,17 @@ void List<BaseData>::remove()
     --numNodes  
 }
 
+//not sure if this is right
 template <class BaseData>
 void List<BaseData>::replace(const BaseData &item)
 {
+     ListNode<BaseData>*p;
+
+     p = new ListNode<BaseData>;
+
+    //assign contents of item to the node referenced by p
+    p->listData = item;
+
+    currentNode = p;
     
 }
