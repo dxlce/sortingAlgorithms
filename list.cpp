@@ -1,54 +1,93 @@
+#include <iostream>
+using namespace std;
+
 template <class BaseData>
 class ListNode
 {
     public:
         BaseData listData;
-        ListNode *link;
-    
+        ListNode *link = NULL;
+
+        ListNode();
+        ~ListNode();
+        //void print();
 };
 
+template<class BaseData>
+ListNode<BaseData>::ListNode()
+{
+    listData = 0;
+    link = NULL;
+}
+
+template<class BaseData>
+ListNode<BaseData>::~ListNode()
+{
+    listData = 0;
+    link = NULL;
+}
 template<class BaseData>
 class List
 {
     protected:
-        ListNode<BaseData> *head;
-        ListNode<BaseData> *currentNode;
-        ListNode<BaseData> *previous;
-        ListNode<BaseData> *afterNode;
+        ListNode<BaseData> *head = NULL;
+        ListNode<BaseData> *currentNode = NULL;
+        ListNode<BaseData> *previous = NULL;
+        ListNode<BaseData> *afterNode = NULL;
 
         int numNodes;
         int currentPos;
 
     public:
         List();
-        List(List<BaseData> &initlist);
         ~List();
 
         void operator = (const List<BaseData> &source);
         void first();
-        void last();
+        int last();
         void makeCurrent(int position);
-        void prev();
         void next();
 
-        BaseData examine();
-        int current();
+        void print();
+        void printCurrent();
         int count();
 
-        void insertBefore(const BaseData &item);
-        void insertAfter(const BaseData &item);
+        void add(const BaseData &item);
+        void addHead(const BaseData &item);
 
-        void remove();
-        void replace(const BaseData &item);
+        void remove(int position);
+        int get(const BaseData &item);
 };
+
 
 template <class BaseData>
 List<BaseData>::List()
 {
-    listArray = new Array<int, BaseData>(1, maxListSize);
-    assert(listArray != 0);
-    numnodes = 0;
+    currentPos = 0;
     currentNode = 0;
+    numNodes = 0;
+}
+
+template <class BaseData>
+List<BaseData>::~List()
+{
+    ListNode<BaseData> *temp;
+    currentNode = head;
+    currentPos = 1;
+    temp = currentNode;
+    numNodes = 0;
+    for (int i = 1; i < numNodes; i++)
+    {
+        delete temp;
+        temp = currentNode->link;
+    }
+}
+
+template<class BaseData>
+void List<BaseData>::operator = (const List<BaseData> &source)
+{
+    this.currentNode = source.currentNode;
+    this.head = source.head;
 }
 
 //not sure if this works
@@ -56,78 +95,76 @@ template <class BaseData>
 void List<BaseData>::first()
 {
     currentNode = head;
-    currentPost = 1;
+    currentPos = 1;
 }
 
 template <class BaseData>
-void List<BaseData>::last()
+int List<BaseData>::last()
 {
     ListNode<BaseData> *p;
 
     p = currentNode;
 
-    while (currentNode->link != null)
+    while (currentNode->link != NULL)
     {
         currentNode = currentNode -> link;
+        currentPos++;
     }
+
+    return currentPos;
 }
 
 template <class BaseData>
 void List<BaseData>::next()
 {
-    currentNode = currentNode->link;
-}
-
-template <class BaseData>
-void List<BaseData>::insertBefore(const BaseData &item)
-{
-    //create new pointer
-    ListNode<BaseData> *p;
-    p = new ListNode<BaseData>;
-
-    //assign contents of item to the node referenced by p
-    p->listData = item;
-
-    //if the current position of node is less than or equal to one (ie. inserting node at beginning of list)
-    if (currentPos <= 1)
+    if (currentNode->link == NULL)
     {
-        //assign head to p
-        head = p;
-        
-        //current position is now one
-        currentPos = 1;
-
-        //if the number of nodes is zero (ie. the only node in the list is 'item') - link it to null
-        if (numnodes == 0)
-        {
-            p->link = null;
-        }
-
-        //else: link p to currentNode
-        else
-        {
-            p->link = currentNode;
-        } 
+        cout << "invalid" << endl;
     }
-
-    //else
     else
     {
-        //link p to current node
-        p->link = currentNode;
-        
-        //link previous node to p
-        previous->link = p;
+        currentNode = currentNode->link;
+        currentPos++;
     }
-
-    //increase numNodes by one
-    ++numNodes;
-    currentNode = p;
-    
+ 
 }
 
 template <class BaseData>
-void List<BaseData>::insertAfter(const BaseData &item)
+void List<BaseData>::print()
+{
+    ListNode<BaseData> *p = head;
+
+    while (p != NULL)
+    {
+        cout << "value: " << p->listData << endl;
+        p = p->link;
+    }
+}
+
+template <class BaseData>
+void List<BaseData>::printCurrent()
+{
+    ListNode<BaseData> *p = currentNode;
+
+    cout << "value: " << p->listData << endl;
+}
+
+template <class BaseData>
+int List<BaseData>::count()
+{
+    ListNode<BaseData> *p = head;
+    int count = 0;
+    while (p != NULL)
+    {
+        count++;
+        p = p->link;
+    }
+
+    return count;
+}
+
+template <class BaseData>
+void List<BaseData>::add(const BaseData &item)
 {
     //create new pointer
     ListNode<BaseData> *p;
@@ -141,56 +178,87 @@ void List<BaseData>::insertAfter(const BaseData &item)
     {
         if (numNodes == 0)
         {
-            p->link = null;
+            p->link = NULL;
+            head = p;
         }
         else
         {
             currentNode->link = p;
-            p->link = null;
+            p->link = NULL;
         }
     }
     else
     {
+        afterNode = currentNode->link;
         currentNode->link = p;
         p->link = afterNode;
     }
 
     ++numNodes;
+    ++currentPos;
     currentNode = p;
-    
 }
 
 template <class BaseData>
-void List<BaseData>::remove()
+void List<BaseData>::addHead(const BaseData &item)
+{
+    ListNode<BaseData> *p;
+    p = new ListNode<BaseData>;
 
+    p->listData = item;
+
+    p->link = head;
+    head = p;
+
+    currentNode = head;
+    currentPos = 1;
+    numNodes++;
+
+}
+
+template <class BaseData>
+void List<BaseData>::remove(int position)
 {
     ListNode<BaseData>*p, *temp;
 
-    p = currentNode;
+    p = head;
 
-    //if current position of current node is 1
+    currentPos = position;
+    while (position != 1)
+    {
+        p = p->link;
+        position--;
+    }
+
+    currentNode = p;
+    
     if (currentPos == 1)
     {
-        //assign head to the next node
-        head = currentNode -> link;
-
-        //set currentNode to head
+        head = currentNode->link;
         currentNode = head;
     }
 
-    //if position of node is anywhere else
     else
     {
+        int prevPosition = currentPos - 1;
+        temp = head;
+        while (prevPosition != 1)
+        {
+            temp = temp->link;
+            prevPosition--;
+        }
 
-        //connect previous node to the node after currentNode
+        previous = temp;
+
         previous->link = currentNode->link;
-        
+
         //if there is a node following currentNode
-        if (currentNode->link != null)
+        if (currentNode->link != NULL)
         {
             //set currentNode to the following node
-            currentNode = currentNode->link
+            currentNode = currentNode->link;
         }
+
         else
         {
             //set currentNode to previous
@@ -199,39 +267,58 @@ void List<BaseData>::remove()
             //set temp to head
             temp = head;
             
-            //while head is not equivalent to currentNode (ie. start from the start and go to there)
-            while (temp->link != currentNode)
+            //issue
+
+            if (numNodes == 2)
             {
-                //link everything
-                temp = temp->link;
+                currentNode = head;
+            }
+            else
+            {
+                //while head is not equivalent to currentNode (ie. start from the start and go to there)
+                while (temp->link != currentNode)
+                {
+                    //link everything
+                    temp = temp->link;
+                }
+
+                //set previous to temp
+                previous = temp;
+                //fix current postiion 
+                --currentPos;
             }
 
-            //set previous to temp
-            previous = temp;
-            //fix current postiion 
-            --currentPos
-            
-        }
-        
-        
+        } 
     }
-
-    //delete node
     delete p;
-    --numNodes  
-}
-
-//not sure if this is right
-template <class BaseData>
-void List<BaseData>::replace(const BaseData &item)
-{
-     ListNode<BaseData>*p;
-
-     p = new ListNode<BaseData>;
-
-    //assign contents of item to the node referenced by p
-    p->listData = item;
-
-    currentNode = p;
+    --numNodes;
     
 }
+
+template <class BaseData>
+int List<BaseData>::get(const BaseData &item)
+{
+    ListNode<BaseData> *p = head;
+    int position = 1;
+
+    bool found = false;
+    for (int i = 0; i < numNodes; ++i)
+    {
+        if (p->listData == item)
+        {
+            found = true;
+            break;
+        }
+        
+        p = p->link;
+        position++;
+    }
+
+    if (found == false)
+    {
+        position = -1;
+    }
+
+    return position;
+}
+
