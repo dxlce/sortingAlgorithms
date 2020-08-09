@@ -5,12 +5,16 @@ template <class BaseData>
 class ListNode
 {
     public:
+        //contains the list data
         BaseData listData;
+
+        //pointer link to link nodes
         ListNode *link = NULL;
 
+        //constructors
         ListNode();
         ~ListNode();
-        //void print();
+
 };
 
 template<class BaseData>
@@ -26,37 +30,39 @@ ListNode<BaseData>::~ListNode()
     listData = 0;
     link = NULL;
 }
+
+//List class
 template<class BaseData>
 class List
 {
     protected:
-        ListNode<BaseData> *head = NULL;
-        ListNode<BaseData> *currentNode = NULL;
-        ListNode<BaseData> *previous = NULL;
-        ListNode<BaseData> *afterNode = NULL;
+        ListNode<BaseData> *head = NULL; //pointer for head of list
+        ListNode<BaseData> *currentNode = NULL; //pointer for current node
+        ListNode<BaseData> *previous = NULL; //pointer for previous node
+        ListNode<BaseData> *afterNode = NULL; //pointer for node after the current node
 
-        int numNodes;
-        int currentPos;
+        int numNodes; //number of nodes
+        int currentPos; //current position
 
     public:
-        List();
-        ~List();
+        List(); //List constructor
+        ~List(); //List destructor
 
-        void operator = (const List<BaseData> &source);
-        void first();
-        int last();
-        void makeCurrent(int position);
-        void next();
+        
+        void first(); //jumps to head
+        int last();   //jumps to tail
+        void makeCurrent(int position); //make node current with position
+        void next(); //goes to next node
 
-        void print();
-        void printCurrent();
-        int count();
+        void print(); //prints out entire list
+        void printCurrent(); //prints current list
+        int count(); //counts number of nodes
 
-        void add(const BaseData &item);
-        void addHead(const BaseData &item);
+        void add(const BaseData &item); //add element after currentNode
+        void addHead(const BaseData &item); //add element as head
 
-        void remove(int position);
-        int get(const BaseData &item);
+        void remove(int position); //remove node from position
+        int get(const BaseData &item); //get position of first node
 };
 
 
@@ -81,13 +87,6 @@ List<BaseData>::~List()
         delete temp;
         temp = currentNode->link;
     }
-}
-
-template<class BaseData>
-void List<BaseData>::operator = (const List<BaseData> &source)
-{
-    this.currentNode = source.currentNode;
-    this.head = source.head;
 }
 
 //not sure if this works
