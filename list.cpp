@@ -9,8 +9,8 @@ class ListNode
         BaseData listData;
 
         //pointer link to link nodes
-        ListNode *link = NULL;
-
+        ListNode *forwardLink = NULL;
+        ListNode *backLink = NULL;
         //constructors
         ListNode();
         ~ListNode();
@@ -21,14 +21,16 @@ template<class BaseData>
 ListNode<BaseData>::ListNode()
 {
     listData = 0;
-    link = NULL;
+    forwardLink = NULL;
+    backLink = NULL;
 }
 
 template<class BaseData>
 ListNode<BaseData>::~ListNode()
 {
     listData = 0;
-    link = NULL;
+    forwardLink = NULL;
+    backLink = NULL;
 }
 
 //List class
@@ -53,6 +55,7 @@ class List
         int last();   //jumps to tail
         void makeCurrent(int position); //make node current with position
         void next(); //goes to next node
+        void prev(); //goes to previous node
 
         void print(); //prints out entire list
         void printCurrent(); //prints current list
@@ -85,7 +88,7 @@ List<BaseData>::~List()
     for (int i = 1; i < numNodes; i++)
     {
         delete temp;
-        temp = currentNode->link;
+        temp = currentNode->forwardLink;
     }
 }
 
@@ -100,43 +103,52 @@ void List<BaseData>::first()
 template <class BaseData>
 int List<BaseData>::last()
 {
-    ListNode<BaseData> *p;
-
-    p = currentNode;
-
-    while (currentNode->link != NULL)
-    {
-        currentNode = currentNode -> link;
-        currentPos++;
-    }
-
-    return currentPos;
+    currentNode = head->backLink;
+    currentPos = numNodes;
+    return numNodes;
 }
 
 template <class BaseData>
 void List<BaseData>::next()
 {
-    if (currentNode->link == NULL)
+    currentNode = currentNode->forwardLink;
+    if (currentPos == numNodes)
     {
-        cout << "invalid" << endl;
+        currentPos = 1;
     }
     else
     {
-        currentNode = currentNode->link;
         currentPos++;
     }
- 
+    
+}
+
+template <class BaseData>
+void List<BaseData>::prev()
+{
+
+    currentNode = currentNode->backLink;
+    if (currentPos == 1)
+    {
+        currentPos = numNodes;
+    }
+    else
+    {
+        currentPos--;
+    }
 }
 
 template <class BaseData>
 void List<BaseData>::print()
 {
     ListNode<BaseData> *p = head;
-
-    while (p != NULL)
+    int temp = numNodes;
+    while (temp != 0)
     {
         cout << "value: " << p->listData << endl;
-        p = p->link;
+        p = p->forwardLink;
+
+        temp--;
     }
 }
 
@@ -151,15 +163,7 @@ void List<BaseData>::printCurrent()
 template <class BaseData>
 int List<BaseData>::count()
 {
-    ListNode<BaseData> *p = head;
-    int count = 0;
-    while (p != NULL)
-    {
-        count++;
-        p = p->link;
-    }
-
-    return count;
+    return numNodes;
 }
 
 template <class BaseData>
@@ -177,20 +181,27 @@ void List<BaseData>::add(const BaseData &item)
     {
         if (numNodes == 0)
         {
-            p->link = NULL;
+            p->forwardLink = p;
+            p->backLink = p;
             head = p;
         }
         else
         {
-            currentNode->link = p;
-            p->link = NULL;
+            currentNode->forwardLink = p;
+            p->forwardLink = head;
+            head->backLink = p;
+
+            p->backLink = currentNode;
         }
     }
     else
     {
-        afterNode = currentNode->link;
-        currentNode->link = p;
-        p->link = afterNode;
+        afterNode = currentNode->forwardLink;
+        currentNode->forwardLink = p;
+        p->forwardLink = afterNode;
+
+        p->backLink = currentNode;
+        afterNode->backLink = p;
     }
 
     ++numNodes;
@@ -201,17 +212,33 @@ void List<BaseData>::add(const BaseData &item)
 template <class BaseData>
 void List<BaseData>::addHead(const BaseData &item)
 {
-    ListNode<BaseData> *p;
+    ListNode<BaseData> *p, *tail;
     p = new ListNode<BaseData>;
-
     p->listData = item;
 
-    p->link = head;
-    head = p;
+    if (numNodes == 0)
+    {
+        p->forwardLink = p;
+        p->backLink = p;
+        
+    }
 
+    else
+    {
+        tail = head->backLink;
+        head->backLink = p;
+        p->forwardLink = head;
+        p->backLink = tail;
+
+        tail->forwardLink = p;
+        
+    }
+    head = p;
     currentNode = head;
     currentPos = 1;
     numNodes++;
+    
+    
 
 }
 
@@ -225,69 +252,25 @@ void List<BaseData>::remove(int position)
     currentPos = position;
     while (position != 1)
     {
-        p = p->link;
+        p = p->forwardLink;
         position--;
     }
 
     currentNode = p;
-    
-    if (currentPos == 1)
-    {
-        head = currentNode->link;
-        currentNode = head;
-    }
 
+    temp = currentNode->backLink;
+    temp->forwardLink = currentNode->forwardLink;
+    temp = currentNode->forwardLink;
+    temp->backLink = currentNode->backLink;
+
+    if (currentPos == numNodes)
+    {
+        currentNode = currentNode->backLink;
+        currentPos--;
+    }
     else
     {
-        int prevPosition = currentPos - 1;
-        temp = head;
-        while (prevPosition != 1)
-        {
-            temp = temp->link;
-            prevPosition--;
-        }
-
-        previous = temp;
-
-        previous->link = currentNode->link;
-
-        //if there is a node following currentNode
-        if (currentNode->link != NULL)
-        {
-            //set currentNode to the following node
-            currentNode = currentNode->link;
-        }
-
-        else
-        {
-            //set currentNode to previous
-            currentNode = previous;
-
-            //set temp to head
-            temp = head;
-            
-            //issue
-
-            if (numNodes == 2)
-            {
-                currentNode = head;
-            }
-            else
-            {
-                //while head is not equivalent to currentNode (ie. start from the start and go to there)
-                while (temp->link != currentNode)
-                {
-                    //link everything
-                    temp = temp->link;
-                }
-
-                //set previous to temp
-                previous = temp;
-                //fix current postiion 
-                --currentPos;
-            }
-
-        } 
+        currentNode = currentNode->forwardLink;
     }
     delete p;
     --numNodes;
@@ -309,7 +292,7 @@ int List<BaseData>::get(const BaseData &item)
             break;
         }
         
-        p = p->link;
+        p = p->forwardLink;
         position++;
     }
 
