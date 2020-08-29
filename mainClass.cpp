@@ -1,28 +1,31 @@
-#include "List.cpp"
+
+#include "Queue.cpp"
 #include <iostream>
 using namespace std;
 
 int main()
 {
-    int a = rand() % 5;
-    int last = 0;
-    int position = 0;
-    List<int> x2;
+    int number = rand() % 100;
+    Queue<int> x2(20);
 
-    for (int i = 0; i < 5; i++)
+    for (int i = 0; i < 20; i++)
     {
-        x2.add(a);
-        a = rand() % 5;
+        x2.enqueue(number);
+        number = rand() % 100;
     }
 
     x2.print();
-    x2.first();
-    x2.prev();
     cout << "break" << endl;
 
-    x2.printCurrent();
+    number = rand() % 20;
 
+    cout << number << endl;
 
+    for (int j = 0; j < number; j++)
+    {
+        x2.dequeue();
+    }
+    x2.print();
     return 0;
 
 }
